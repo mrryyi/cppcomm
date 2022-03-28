@@ -11,7 +11,7 @@ So I decided to start a project to work on consistently, but hmm, what should I 
 A specific application was out of the question because I don't have any problems to solve in my life that I can't solve with existing software.
 So how about a library? I might use it in my own projects, or someone might fork it and make it into something useful.
 
-I mostly chose to do this because my graduation thesis covered network communications and that was super fun. Go have a read if you want:
+I mostly chose to do this because my graduation thesis covered network communications and that was super fun. Go have a read if you want: https://github.com/mrryyi/Splite/blob/master/REPORT%202020-05-24.pdf
 
 Discussion
 ----------
