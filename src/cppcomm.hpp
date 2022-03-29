@@ -12,6 +12,8 @@
 #endif
 
 // Saves time being explicit not having to google sizes.
+// I know, your subconscious says "Pshh, he has to google that?"
+// I guess not everyone can be like you, my liege.
 typedef unsigned long long uint64;
 typedef unsigned int uint32;
 typedef unsigned short uint16;
