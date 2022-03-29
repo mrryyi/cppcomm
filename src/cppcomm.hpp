@@ -54,12 +54,6 @@ struct Message {
 
 };// End Message struct
 
-// 
-const static Message create_message() {
-  Message m;
-  return m;
-}
-
 // writes uint8, increments iterator.
 static void  write_uint8(uint8** buffer, const uint8& ui8) {
   // Set the value at reader iterator
