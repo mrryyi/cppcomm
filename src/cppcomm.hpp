@@ -309,12 +309,11 @@ private:
   
 // writes uint8, increments iterator.
 static void write_uint8(uint8** buffer_iterator, const uint8& ui8) {
-  // Set the value at reader iterator
   **buffer_iterator = ui8;
-  // Increase the iterator
   ++(*buffer_iterator);
 }
 
+// reads uint8, increments iterator.
 static void read_uint8(uint8** buffer_iterator, uint8* ui8) {
   *ui8 = **buffer_iterator;
   ++(*buffer_iterator);
