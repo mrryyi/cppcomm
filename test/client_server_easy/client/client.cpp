@@ -5,57 +5,21 @@ int main(int argc, char* argv[]) {
 
   printf("Program Started: %s\n", argv[0]); 
 
-  std::string inet_address = "127.0.0.1";
+  const char * local_inet_address = "127.0.0.1";
 
-
-  // Forces stdout to be line-buffered.
-  setvbuf(stdout, NULL, _IONBF, 0);
-
-  //--------------------------------------------
-  // Initialize Winsock
-  int     iResult;
-  WSADATA wsaData;
-  iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
-  if (iResult != 0) {
-      printf("WSAStartup failed: %d", iResult);
-      exit(EXIT_FAILURE);
-  }
-
-
-  SOCKET sock;
-
-  if( !cppcomm::make_socket( &sock ) )
-  {
-    printf( "socket failed: %d", WSAGetLastError() );
+  cppcomm::Communicator communicator;
+  uint32_retval ret = communicator.init_nonblocking_udp(local_inet_address, PORT_CLIENT);
+  if (ret != cppcomm::SUCCESS_INIT) {
     WSACleanup();
-    exit(EXIT_FAILURE);
-  }
-
-  //----------------------------------------
-  // Make local address
-  SOCKADDR_IN local_address;
-  local_address.sin_family = address_family;
-  {
-    srand( (unsigned) time(NULL) );
-    u_short random_port = 1000 + rand() % 56000;
-  }
-    local_address.sin_port = htons( PORT_CLIENT);
-  local_address.sin_addr.s_addr = INADDR_ANY;
-  
-  //----------------------------------------
-  // Bind the socket to local address and port.
-  if( bind( sock, (SOCKADDR*)&local_address, sizeof( local_address ) ) == SOCKET_ERROR )
-  {
-    printf( "bind failed: %d", WSAGetLastError() );
-    exit(EXIT_FAILURE);
+    return 0;
   }
 
   //----------------------------------
   // Create an address to send messages to.
   SOCKADDR_IN server_address;
-  server_address.sin_family = address_family;
+  server_address.sin_family = AF_INET;
   server_address.sin_port = htons( PORT_SERVER );
-  server_address.sin_addr.S_un.S_addr = inet_addr( "127.0.0.1"/*inet_address.c_str()*/ );
+  server_address.sin_addr.S_un.S_addr = inet_addr(local_inet_address);
   
   printf("Running.\nSending messages...\n");
   
@@ -64,7 +28,9 @@ int main(int argc, char* argv[]) {
     {
       cppcomm::Message msg;
       uint32 msg_size = cppcomm::client_msg_one_write(msg.buffer);
-      cppcomm::send_msg(&sock, msg, msg_size, server_address);
+      uint32_retval ret = communicator.send_msg(msg, msg_size, server_address);
+      if(ret == cppcomm::FAILURE_COMMUNICATOR_NOT_INITIALIZED)
+        printf("what the heck");
       Sleep(1000);
     }
 
@@ -72,7 +38,9 @@ int main(int argc, char* argv[]) {
     {
       cppcomm::Message msg;
       uint32 msg_size = cppcomm::client_msg_two_write(msg.buffer);
-      cppcomm::send_msg(&sock, msg, msg_size, server_address);
+      uint32_retval ret = communicator.send_msg(msg, msg_size, server_address);
+      if(ret == cppcomm::FAILURE_COMMUNICATOR_NOT_INITIALIZED)
+        printf("what the heck");
       Sleep(1000);
     }
   }

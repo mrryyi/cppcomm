@@ -1,7 +1,7 @@
 CXX = g++ -static -static-libgcc -static-libstdc++ -std=c++20
 COMPILE_FLAGS = -c
 LIBRARIES =
-LDFLAGS = $(LIBRARIES) -lwsock32
+LDFLAGS = $(LIBRARIES) -lwsock32 -Wall -Wextra
 
 TARGET = client.exe
 cpp_files = client.cpp
