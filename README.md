@@ -1,4 +1,4 @@
-cppcomm: header-only cpp communications
+cppcomm: header-only cpp socket communication
 =========================================
 
 Communicate with less effort in C++.
@@ -20,12 +20,10 @@ Discussion
 
 cppcomm should at least help facillitate client-server topology.
 
-"But ryyi, nobody will ever use your library! There are way better libs and cope and mald"
-
 ### Design choices
 
 I like snake_case.
 
-I like writing C++ in C-style, but I dislike not having access to STL (fuck you C-strings)
+I like writing C++ in C-style, but I dislike not having access to STL.
 
-I just wanna make my keyboard make clicky noises and produce aesthetically pleasing pixels on my screen that might or might not segfault.
+I just wanna make my keyboard do clicky noises and produce aesthetically pleasing pixels on my screen that might or might not segfault.
