@@ -13,8 +13,6 @@ So how about a library? I might use it in my own projects, or someone might fork
 
 This project was chosen in particular because, had I written something like this prior to writing [Splite](https://github.com/mrryyi/Splite), I'd'n't've'd to spend approximately 50% of Splite development on pointer debugging.
 
-https://github.com/mrryyi/Splite/blob/master/REPORT%202020-05-24.pdf
-
 Discussion
 ----------
 
