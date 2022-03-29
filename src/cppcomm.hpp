@@ -3,6 +3,8 @@
 #include <ws2tcpip.h> // for whatever
 #include <iphlpapi.h> // for whatever
 #include <iostream> // for printf
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -43,7 +45,7 @@ struct Message {
   uint32 SOCKADDR_IN_size;
   uint32 flags = 0;
   SOCKADDR_IN address;
-  uint32 address_size;
+  uint32 address_size = sizeof(Message::address);
   uint32 bytes_received = SOCKET_ERROR;
 
   void set_address(const SOCKADDR_IN address ) {
@@ -52,15 +54,114 @@ struct Message {
 
 };// End Message struct
 
-const static void send_message() {
-
-}
-
 // 
 const static Message create_message() {
   Message m;
   return m;
 }
+
+// writes uint8, increments iterator.
+static void  write_uint8(uint8** buffer, const uint8& ui8) {
+  // Set the value at reader iterator
+  **buffer = ui8;
+  // Increase the iterator
+  ++(*buffer);
+}
+
+static void read_uint8(uint8** buffer, uint8* ui8) {
+  *ui8 = **buffer;
+  ++(*buffer);
+}
+
+uint32 client_msg_one_write( uint8* buffer) {
+    uint8* iterator = buffer;
+
+    const static uint8 one = 1;
+
+    write_uint8(&iterator, one);
+
+    return (uint32)(iterator - buffer);
+};
+
+uint32 client_msg_two_write( uint8* buffer) {
+    uint8* iterator = buffer;
+
+    const static uint8 two = 2;
+
+    write_uint8(&iterator, two);
+
+    return (uint32)(iterator - buffer);
+};
+
+void client_msg_1byte_read(uint8* buffer, uint8* byte) {
+  uint8* iterator = buffer;
+  read_uint8(&iterator, byte);
+}
+
+void send_msg(SOCKET* sock, Message& s_Msg, uint32 buffer_length, SOCKADDR_IN& address) {
+    if (sendto( *sock,
+                (const char*) s_Msg.buffer,
+                buffer_length,
+                s_Msg.flags,
+                (SOCKADDR*)&address,
+                sizeof( address )) == SOCKET_ERROR) {
+        printf( "sendto failed: %d", WSAGetLastError() );
+    }
+}
+
+bool8 make_socket(SOCKET* out_socket)
+{
+  int address_family = AF_INET;
+  int type = SOCK_DGRAM;
+  int protocol = IPPROTO_UDP;
+  SOCKET sock;
+  sock = socket(address_family, type, protocol);
+
+  const static int SOCKET_BUFFER_SIZE = 1024;
+  const static int iOptLen = sizeof(int); 
+
+  if (!setsockopt(sock, SOL_SOCKET, SO_RCVBUF, (char*) &SOCKET_BUFFER_SIZE, iOptLen))
+  {
+    printf("failed to set rcvbuf size: %d\n", WSAGetLastError());
+  }
+  if (!setsockopt(sock, SOL_SOCKET, SO_SNDBUF, (char*) &SOCKET_BUFFER_SIZE, iOptLen))
+  {
+    printf("failed to set sndbuf size: %d\n", WSAGetLastError());
+  }
+
+  if (sock == INVALID_SOCKET)
+  {
+    printf("socket() failed: %d\n", WSAGetLastError());
+    return false;
+  }
+
+  // put socket in non-blocking mode
+  ULONG enabled = 1;
+
+    // You may be wondering why we pass 0x8004667E as the second argument.
+    // We actually want to pass FIONBIO, but it doesn't work, so we're using the value FIONBIO
+    // would have if it worked. This results in the correct behaviour.
+    // This issue took a million years to solve, including giving up on non-blocking sockets,
+    // trying to settle for a billion threads to solve concurrency requirements,
+    // encountering a quadrillion segfaults and WSA errors, refactoring here and there to accomodate
+    // threading, then giving up to find this:
+    //
+    // https://stackoverflow.com/a/16185001
+    //
+    // :)
+
+  int result = ioctlsocket(sock, 0x8004667E, &enabled);
+  if (result == SOCKET_ERROR)
+  {
+    printf("ioctlsocket() failed: %d\n", WSAGetLastError());
+    return false;
+  }
+
+    *out_socket = sock;
+
+  return true;
+};
+
 
 // Below code stolen from:
 // https://www.includehelp.com/c-programs/check-string-is-valid-ipv4-address-or-not.aspx

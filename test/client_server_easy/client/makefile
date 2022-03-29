@@ -3,8 +3,8 @@ COMPILE_FLAGS = -c
 LIBRARIES =
 LDFLAGS = $(LIBRARIES) -lwsock32
 
-TARGET = server.exe
-cpp_files = main.cpp
+TARGET = client.exe
+cpp_files = client.cpp
 objects = $(cpp_files:.cpp=.o)
 
 all: $(TARGET)
