@@ -22,7 +22,7 @@ cppcomm should at least help facillitate client-server topology.
 
 "But ryyi, nobody will ever use your library! There are way better libs and cope and mald"
 
-### design choices
+### Design choices
 
 I like snake_case.
 
