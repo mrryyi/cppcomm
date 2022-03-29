@@ -174,8 +174,8 @@ public:
   }
 
   // Returns COMMUNICATOR_NOT_INITIALIZED if communicator not initialized
-  // Returns FAILURE_RECEIVING_MESSAGE if sendto failed
-  // Returns SUCCESS_RECEIVING_MESSAGE if sendto succeeded
+  // Returns FAILURE_RECEIVING_MESSAGE if recvmsg failed
+  // Returns SUCCESS_RECEIVING_MESSAGE if recvmsg succeeded
   [[nodiscard]]
   uint32_retval recv_msg(Message& recv_msg) {
     if (!m_initialized)
