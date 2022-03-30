@@ -3,6 +3,21 @@ cppcomm: header-only cpp socket communication
 
 Communicate with less effort in C++.
 
+Features
+-----------
+
+| Feature | Status | Tested |
+| UDP nonblocking | Implemented | ✅ |
+| UDP blocking | TBI | n/a |
+| TCP nonblocking | TBI | n/a |
+| TCP blocking | TBI | n/a |
+| Message Wrapping | TBI | n/a |
+| Thread-safe | TBI | n/a |
+| Memory-safe | TBI | n/a |
+| Compiletime msg def | TBI | n/a |
+| Minimal overhead | TBI | n/a |
+
+
 Background
 ------------
 
