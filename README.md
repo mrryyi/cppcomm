@@ -3,6 +3,47 @@ cppcomm: header-only cpp socket communication
 
 Communicate with less effort in C++.
 
+Features
+-----------
+
+| Feature | Status | Tested |
+|---------|--------|--------|
+| UDP nonblocking | Implemented | ✅ |
+| UDP blocking | TBI | n/a |
+| TCP nonblocking | TBI | n/a |
+| TCP blocking | TBI | n/a |
+| Message Wrapping | TBI | n/a |
+| Thread-safe | TBI | n/a |
+| Memory-safe | TBI | n/a |
+| Compiletime msg def | TBI | n/a |
+| Minimal overhead | TBI | n/a |
+
+Examples
+--------
+
+### UDP nonblocking
+
+```
+void main() {
+// ...
+const char * local_inet_address = "127.0.0.1";
+
+cppcomm::Communicator communicator;
+auto ret = communicator.init_nonblocking_udp(local_inet_address, PORT_CLIENT);
+if (ret != cppcomm::SUCCESS_INIT) {
+  WSACleanup();
+  return 0;
+}
+
+cppcomm::Message msg;
+uint32 msg_size = cppcomm::client_msg_one_write(msg.buffer);
+auto ret = communicator.send_msg(msg, msg_size, server_address);
+
+// Continues after sending without blocking
+
+// ...
+```
+
 Background
 ------------
 
