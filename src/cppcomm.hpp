@@ -235,8 +235,7 @@ private:
     // put socket in non-blocking mode
     ULONG enabled = 1;
     int result = ioctlsocket(sock, 0x8004667E, &enabled);
-    if (result == SOCKET_ERROR)
-    {
+    if (result == SOCKET_ERROR) {
       printf("ioctlsocket() failed: %d\n", WSAGetLastError());
       return false;
     }
