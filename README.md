@@ -7,6 +7,7 @@ Features
 -----------
 
 | Feature | Status | Tested |
+|---------|--------|--------|
 | UDP nonblocking | Implemented | ✅ |
 | UDP blocking | TBI | n/a |
 | TCP nonblocking | TBI | n/a |
