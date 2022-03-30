@@ -8,7 +8,7 @@ int main(int argc, char* argv[]) {
   const char * local_inet_address = "127.0.0.1";
 
   cppcomm::Communicator communicator;
-  uint32_retval ret = communicator.init_nonblocking_udp(local_inet_address, PORT_CLIENT);
+  auto ret = communicator.init_nonblocking_udp(local_inet_address, PORT_CLIENT);
   if (ret != cppcomm::SUCCESS_INIT) {
     WSACleanup();
     return 0;
@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
     {
       cppcomm::Message msg;
       uint32 msg_size = cppcomm::client_msg_one_write(msg.buffer);
-      uint32_retval ret = communicator.send_msg(msg, msg_size, server_address);
+      auto ret = communicator.send_msg(msg, msg_size, server_address);
       if(ret == cppcomm::FAILURE_COMMUNICATOR_NOT_INITIALIZED)
         printf("what the heck");
       Sleep(1000);
@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
     {
       cppcomm::Message msg;
       uint32 msg_size = cppcomm::client_msg_two_write(msg.buffer);
-      uint32_retval ret = communicator.send_msg(msg, msg_size, server_address);
+      auto ret = communicator.send_msg(msg, msg_size, server_address);
       if(ret == cppcomm::FAILURE_COMMUNICATOR_NOT_INITIALIZED)
         printf("what the heck");
       Sleep(1000);

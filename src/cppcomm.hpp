@@ -26,30 +26,30 @@ typedef int32 bool32;
 typedef uint8 bool8;
 typedef float float32;
 typedef double float64;
-typedef unsigned int uint32_retval;
+typedef int int32_retval;
 
 namespace cppcomm
 {
 // STATUS CODES
-// 5xx = meta/infra-specific error codes.
-// 4xx = functionality-specific error codes.
+// -5xx = meta/infra-specific error codes.
+// -4xx = functionality-specific error codes.
 // 2xx = successful codes.
 
 // 5xx
-constexpr static uint32_retval FAILURE_COMMUNICATOR_NOT_INITIALIZED = 500;
-constexpr static uint32_retval FAILURE_INITIALIZING_WINSOCK         = 501;
-constexpr static uint32_retval FAILURE_MAKE_SOCKET                  = 502;
-constexpr static uint32_retval FAILURE_BIND_SOCKET                  = 503;
-constexpr static uint32_retval FAILURE_ALREADY_INITIALIZED          = 504;
+constexpr static int32_retval FAILURE_COMMUNICATOR_NOT_INITIALIZED = -500;
+constexpr static int32_retval FAILURE_INITIALIZING_WINSOCK         = -501;
+constexpr static int32_retval FAILURE_MAKE_SOCKET                  = -502;
+constexpr static int32_retval FAILURE_BIND_SOCKET                  = -503;
+constexpr static int32_retval FAILURE_ALREADY_INITIALIZED          = -504;
 
 // 4xx
-constexpr static uint32_retval FAILURE_SENDING_MESSAGE              = 400;
-constexpr static uint32_retval FAILURE_RECEIVING_MESSAGE            = 400;
+constexpr static int32_retval FAILURE_SENDING_MESSAGE              = -400;
+constexpr static int32_retval FAILURE_RECEIVING_MESSAGE            = -400;
 
 // 2xx
-constexpr static uint32_retval SUCCESS_SENDING_MESSAGE   = 200;
-constexpr static uint32_retval SUCCESS_RECEIVING_MESSAGE = 201;
-constexpr static uint32_retval SUCCESS_INIT              = 202;
+constexpr static int32_retval SUCCESS_SENDING_MESSAGE   = 200;
+constexpr static int32_retval SUCCESS_RECEIVING_MESSAGE = 201;
+constexpr static int32_retval SUCCESS_INIT              = 202;
 
 constexpr static int32 SOCKET_BUFFER_SIZE = 1024;
 
@@ -111,7 +111,7 @@ public:
   // Returns FAILURE_INITIALIZING_WINSOCK if winsock initialization unsuccessful 
   // Returns FAILURE_MAKE_SOCKET if socket-making unsuccessful
   [[nodiscard]]
-  uint32_retval init_nonblocking_udp(const char * ip, const int& port) {
+  auto init_nonblocking_udp(const char * ip, const uint16& port) {
     
     if (m_initialized)
       return FAILURE_ALREADY_INITIALIZED;
@@ -152,7 +152,7 @@ public:
   // Returns FAILURE_SENDING_MESSAGE if sendto failed
   // Returns SUCCESS_SENDING_MESSAGE if success
   [[nodiscard]]
-  uint32_retval send_msg(Message& s_Msg, const uint32& buffer_length, const SOCKADDR_IN& address) noexcept {
+  auto send_msg(Message& s_Msg, const uint32& buffer_length, const SOCKADDR_IN& address) noexcept {
     if (!m_initialized)
       return FAILURE_COMMUNICATOR_NOT_INITIALIZED;
 
@@ -177,7 +177,7 @@ public:
   // Returns FAILURE_RECEIVING_MESSAGE if recvmsg failed
   // Returns SUCCESS_RECEIVING_MESSAGE if recvmsg succeeded
   [[nodiscard]]
-  uint32_retval recv_msg(Message& recv_msg) {
+  auto recv_msg(Message& recv_msg) {
     if (!m_initialized)
       return FAILURE_COMMUNICATOR_NOT_INITIALIZED;
     

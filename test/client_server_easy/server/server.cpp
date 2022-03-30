@@ -8,7 +8,7 @@ int main(int argc, char* argv[]) {
   const char * local_inet_address = "127.0.0.1";
 
   cppcomm::Communicator communicator;
-  uint32_retval ret = communicator.init_nonblocking_udp(local_inet_address, PORT_SERVER);
+  auto ret = communicator.init_nonblocking_udp(local_inet_address, PORT_SERVER);
   if (ret != cppcomm::SUCCESS_INIT) {
     WSACleanup();
     return 0;
@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
   for (ever) {
     // Receive messages.
     cppcomm::Message msg;
-    uint32_retval ret = communicator.recv_msg(msg);
+    auto ret = communicator.recv_msg(msg);
     
     if (msg.bytes_handled != SOCKET_ERROR) {
       printf("Received message.\n");
