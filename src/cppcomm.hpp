@@ -72,7 +72,7 @@ struct Message {
   uint32 address_size = sizeof(Message::address);
   uint32 bytes_handled = SOCKET_ERROR; // Bytes that have been received/sent
 
-  void set_address(const SOCKADDR_IN address ) {
+  void set_address(const SOCKADDR_IN& address ) noexcept {
     this->address = address;
   } // end set_address
 
@@ -80,7 +80,7 @@ struct Message {
 
 // Returns true if winsock has been, at one point, successfully initialized.
 // Returns false if attempt to initialize winsock is unsuccessful.
-const static bool8 init_winsock() {
+const static bool8 init_winsock() noexcept {
   // We need only one successful startup of WSA.
   static bool initialized = false; 
 
@@ -104,14 +104,14 @@ const static bool8 init_winsock() {
 // TODO: Get port and IP bound to the socket. Perhpas just return m_local_address.
 class Communicator {
 public:
-  Communicator() {};
+  Communicator() noexcept {};
 
   // Initializes communication, opens and binds a socket to ip and port.
   // Returns FAILURE_ALREADY_INITIALIZED if Communication already has been initialized.
   // Returns FAILURE_INITIALIZING_WINSOCK if winsock initialization unsuccessful 
   // Returns FAILURE_MAKE_SOCKET if socket-making unsuccessful
   [[nodiscard]]
-  auto init_nonblocking_udp(const char * ip, const uint16& port) {
+  auto init_nonblocking_udp(const char * ip, const uint16& port) noexcept {
     
     if (m_initialized)
       return FAILURE_ALREADY_INITIALIZED;
@@ -177,7 +177,7 @@ public:
   // Returns FAILURE_RECEIVING_MESSAGE if recvmsg failed
   // Returns SUCCESS_RECEIVING_MESSAGE if recvmsg succeeded
   [[nodiscard]]
-  auto recv_msg(Message& recv_msg) {
+  auto recv_msg(Message& recv_msg) noexcept {
     if (!m_initialized)
       return FAILURE_COMMUNICATOR_NOT_INITIALIZED;
     
