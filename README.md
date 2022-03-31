@@ -1,7 +1,7 @@
-cppcomm: header-only cpp socket communication
+cppcomm: header-only c++20 windows socket communication
 =========================================
 
-Communicate with less effort in C++.
+Communicate with less effort in C++20
 
 Features
 -----------
@@ -43,6 +43,13 @@ auto ret = communicator.send_msg(msg, msg_size, server_address);
 
 // ...
 ```
+
+Requirements
+------------
+
+- Windows
+- Compileflags: `-static -static-libgcc -static-libstdc++ -std=c++20`
+- LDflags: `-lwsock32 -Wall -Wextra`
 
 Background
 ------------
