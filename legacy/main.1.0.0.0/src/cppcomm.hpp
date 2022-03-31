@@ -209,7 +209,8 @@ int is_valid_ip(char *ip_str)
 
   /* valid IP string must contain 3 dots */
   if (dots != 3)
-  return 0;
+    return 0;
+  
   return 1;
 }
 
