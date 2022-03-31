@@ -196,11 +196,13 @@ public:
   
 
 private:
-  bool8 m_initialized = false;
+  // Local management
+  bool8         m_initialized = false;
 
-  SOCKET m_socket;
-  SOCKADDR_IN m_local_address;
-  int32 m_local_port;
+  // Socket specific
+  SOCKET        m_socket;
+  SOCKADDR_IN   m_local_address;
+  uint16        m_local_port;
 
   bool8 make_nonblocking_udp_socket(SOCKET* out_socket) { 
     constexpr static int address_family = AF_INET;
@@ -327,13 +329,13 @@ uint32 client_msg_one_write( uint8* buffer) {
 };
 
 uint32 client_msg_two_write( uint8* buffer) {
-    uint8* iterator = buffer;
+  uint8* iterator = buffer;
 
-    const static uint8 two = 2;
+  const static uint8 two = 2;
 
-    write_uint8(&iterator, two);
+  write_uint8(&iterator, two);
 
-    return (uint32)(iterator - buffer);
+  return (uint32)(iterator - buffer);
 };
 
 void client_msg_1byte_read(uint8* buffer, uint8* byte) {
