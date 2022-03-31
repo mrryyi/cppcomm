@@ -318,6 +318,22 @@ static void read_uint8(uint8** buffer_iterator, uint8* ui8) {
   ++(*buffer_iterator);
 }
 
+// writes uint32, increments iterator.
+static void write_uint32(uint8** buffer, uint32 ui32) {
+    // *buffer means the address of the value we want to start at.
+    // We read bytes equal to the third argument.
+    memcpy(*buffer, &ui32, sizeof( ui32 ));
+    *buffer += sizeof( ui32 );
+};
+
+// reads uint32, increments iterator.
+static void read_uint32(uint8** buffer, uint32* ui32) {
+    // *buffer means the address of the value we want to start at.
+    // We read bytes equal to the third argument.
+    memcpy(ui32, *buffer, sizeof( *ui32 ));
+    *buffer += sizeof( *ui32 );
+};
+
 uint32 client_msg_one_write( uint8* buffer) {
   uint8* iterator = buffer;
 

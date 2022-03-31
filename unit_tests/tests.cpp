@@ -1,10 +1,10 @@
 #include "../src/cppcomm.hpp"
 
 struct TEST_DATA {
-    const bool8 success;
-    const std::string function_that_tests;
-    const std::string what_was_tested;
-    const std::string what_should_happen;
+    bool8 success;
+    std::string function_that_tests;
+    std::string what_was_tested;
+    std::string what_should_happen;
 };
 
 TEST_DATA read_write_basic_uint8();
@@ -25,9 +25,11 @@ int main (int args, const char* argv[]) {
 }
 
 TEST_DATA read_write_basic_uint8() {
-    const std::string function_that_tests = __func__;
-    const std::string what_is_being_tested = "write_uint8, read_uint8";
-    const std::string what_should_happen = "should write and read giving same values in order";
+    TEST_DATA test_data;
+    test_data.success = false;
+    test_data.function_that_tests = __func__;
+    test_data.what_was_tested = "read/write basic uint8";
+    test_data.what_should_happen = "should write and read giving same values in order";
 
     using namespace cppcomm;
     // Prepare test-components
@@ -53,6 +55,7 @@ TEST_DATA read_write_basic_uint8() {
     read_uint8(&read_iterator, &r_byte1);
     read_uint8(&read_iterator, &r_byte2);
 
+    // Check if it went as expected.
     if (   r_byte0 == w_byte0
         && r_byte1 == w_byte1
         && r_byte2 == w_byte2
@@ -62,9 +65,9 @@ TEST_DATA read_write_basic_uint8() {
         && r_byte1 != w_byte2
         && r_byte2 != w_byte0
         )
-        return TEST_DATA { true, function_that_tests, what_is_being_tested, what_should_happen};
-    else
-        return TEST_DATA { false, function_that_tests, what_is_being_tested, what_should_happen};
+    { test_data.success = true; }
+
+    return test_data;    
 }
 
 void print_test(TEST_DATA test_data) {

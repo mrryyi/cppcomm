@@ -4,7 +4,7 @@ LIBRARIES =
 LDFLAGS = $(LIBRARIES) -lwsock32 -Wall -Wextra
 
 TARGET = test.exe
-cpp_files = test_buffer.cpp
+cpp_files = tests.cpp
 objects = $(cpp_files:.cpp=.o)
 
 all: $(TARGET)
