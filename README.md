@@ -12,7 +12,7 @@ Features
 | UDP blocking | TBI | n/a |
 | TCP nonblocking | TBI | n/a |
 | TCP blocking | TBI | n/a |
-| Message Wrapping | TBI | n/a |
+| Message Buffer Wrapping | Implemented | ✅ |
 | Thread-safe | TBI | n/a |
 | Memory-safe | TBI | n/a |
 | Compiletime msg def | TBI | n/a |
