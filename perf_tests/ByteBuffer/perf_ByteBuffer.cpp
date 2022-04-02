@@ -38,6 +38,38 @@ void test_RawPointers_fill_1024_sized_buffer_with_uint8() {
 }
 
 
+static void write_uint32(uint8** buffer_iterator, uint32 i32) {
+    memcpy(*buffer_iterator, &i32, sizeof( i32 ));
+    *buffer_iterator += sizeof( i32 );
+};
+
+void test_ByteBuffer_fill_4096_sized_buffer_with_uint32_resize() {
+  cppcomm::ByteBuffer buffer;
+  buffer.resize(4096);
+  for (size_t i = 0; i < buffer.capacity() / sizeof(uint32); ++i) {
+    buffer.write_uint32(i % 256);
+  }
+}
+
+void test_ByteBuffer_fill_4096_sized_buffer_with_uint32_no_resize() {
+  cppcomm::ByteBuffer buffer(4096);
+  for (size_t i = 0; i < buffer.capacity() / sizeof(uint32); ++i) {
+    buffer.write_uint32(i % 256);
+  }
+}
+
+void test_RawPointers_fill_4096_sized_buffer_with_uint32() {
+  
+    // This is how it would have been 
+    uint8 buffer[4096];
+    uint8* buffer_iterator = buffer;
+    
+    for (int i = 0; i < 4096 / sizeof(uint32); ++i) {
+      write_uint32(&buffer_iterator, i % 256);
+    }
+}
+
+
 // Should contain iterations and time in microseconds
 struct PerformanceTestData {
   uint64 iterations;
@@ -94,31 +126,31 @@ int main (int args, const char* argv[]) {
   uint64 iterations_for_avg = 100;
   uint64 iterations_for_func = 1000;
 
-  bool test_all = true;
+  bool test_all = args > 1 ? false : true;
 
-  if (args > 1) {
-    test_all = false;
-  }
-
-  if (test_all || argv[1] == std::string("uint8_resize")) {
+  if (test_all || argv[1] == std::string("bytefill")) {
     // Safe
     std::cout << "test_ByteBuffer_fill_1024_sized_buffer_with_uint8_resize" << '\n';
     print_AvgPerformanceTestData(test_function_time_avg(iterations_for_avg, iterations_for_func, test_ByteBuffer_fill_1024_sized_buffer_with_uint8_resize));
-  }
-  
-  if (test_all || argv[1] == std::string("uint8_no_resize")) {
     // Safe
     std::cout << "test_ByteBuffer_fill_1024_sized_buffer_with_uint8_no_resize" << '\n';
     print_AvgPerformanceTestData(test_function_time_avg(iterations_for_avg, iterations_for_func, test_ByteBuffer_fill_1024_sized_buffer_with_uint8_no_resize));
-  }
-  
-  if (test_all || argv[1] == std::string("uint8_raw_pointers")) {
     // Non-safe variant
     std::cout << "test_RawPointers_fill_1024_sized_buffer_with_uint8" << '\n';
     print_AvgPerformanceTestData(test_function_time_avg(iterations_for_avg, iterations_for_func, test_RawPointers_fill_1024_sized_buffer_with_uint8));
   }
 
-  
+  if (test_all || argv[1] == std::string("4bytefill")) {
+    // Safe
+    std::cout << "test_ByteBuffer_fill_4096_sized_buffer_with_uint32_resize" << '\n';
+    print_AvgPerformanceTestData(test_function_time_avg(iterations_for_avg, iterations_for_func, test_ByteBuffer_fill_4096_sized_buffer_with_uint32_resize));
+    // Safe
+    std::cout << "test_ByteBuffer_fill_4096_sized_buffer_with_uint32_no_resize" << '\n';
+    print_AvgPerformanceTestData(test_function_time_avg(iterations_for_avg, iterations_for_func, test_ByteBuffer_fill_4096_sized_buffer_with_uint32_no_resize));
+    // Non-safe variant
+    std::cout << "test_RawPointers_fill_4096_sized_buffer_with_uint32" << '\n';
+    print_AvgPerformanceTestData(test_function_time_avg(iterations_for_avg, iterations_for_func, test_RawPointers_fill_4096_sized_buffer_with_uint32));
+  }
 
   return 0;
 }

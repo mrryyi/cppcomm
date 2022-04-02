@@ -43,15 +43,24 @@ TEST_DATA read_write_ByteBuffer_mixed_types() {
     cppcomm::ByteBuffer buffer(1024);
 
     // Write some data to the buffer
+    buffer.write_int8(1);
+    buffer.write_int16(2);
+    buffer.write_int32(3);
+    buffer.write_int64(4);
     buffer.write_uint8(1);
     buffer.write_uint16(2);
     buffer.write_uint32(3);
     buffer.write_uint64(4);
     buffer.write_float32(5.0f);
     buffer.write_float64(6.0);
+    
     buffer.write_string("Hello World");
 
     // Read the data back
+    int8_t int8_value   = buffer.read_int8();
+    int16_t int16_value = buffer.read_int16();
+    int32_t int32_value = buffer.read_int32();
+    int64_t int64_value = buffer.read_int64();
     uint8_t uint8_value = buffer.read_uint8();
     uint16_t uint16_value = buffer.read_uint16();
     uint32_t uint32_value = buffer.read_uint32();
@@ -61,7 +70,11 @@ TEST_DATA read_write_ByteBuffer_mixed_types() {
     std::string string_value; buffer.read_string(string_value);
 
     // Check the values
-    if (uint8_value != 1 
+    if (   int8_value != 1 
+        && int16_value != 2
+        && int32_value != 3
+        && int64_value != 4
+        && uint8_value != 1 
         && uint16_value != 2
         && uint32_value != 3
         && uint64_value != 4
