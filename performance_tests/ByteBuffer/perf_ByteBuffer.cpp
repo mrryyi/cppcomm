@@ -101,7 +101,7 @@ int main (int args, const char* argv[]) {
 
   if (test_all || argv[1] == std::string("uint8_resize")) {
     // Safe
-    std::cout << "test_ByteBuffer_fill_1024_sized_buffer_with_uint8" << '\n';
+    std::cout << "test_ByteBuffer_fill_1024_sized_buffer_with_uint8_resize" << '\n';
     print_AvgPerformanceTestData(test_function_time_avg(iterations_for_avg, iterations_for_func, test_ByteBuffer_fill_1024_sized_buffer_with_uint8_resize));
   }
   
