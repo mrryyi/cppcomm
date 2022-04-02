@@ -31,8 +31,6 @@ typedef int int32_retval;
 
 namespace cppcomm
 {
-
-
 // STATUS CODES
 // -5xx = meta/infra-specific error codes.
 // -4xx = functionality-specific error codes.
@@ -472,20 +470,8 @@ private:
     return 1;
   }
 }; // End Communicator
-
   
-// writes uint8, increments iterator.
-static void write_uint8(uint8** buffer_iterator, const uint8& ui8) {
-  **buffer_iterator = ui8;
-  ++(*buffer_iterator);
-}
-
-// reads uint8, increments iterator.
-static void read_uint8(uint8** buffer_iterator, uint8* ui8) {
-  *ui8 = **buffer_iterator;
-  ++(*buffer_iterator);
-}
-
+// Below functions are purely for demo purposes.
 void client_msg_one_write( ByteBuffer& buffer) {
   buffer.resize(sizeof(uint8));
   buffer.write_uint8(1);
@@ -499,7 +485,5 @@ void client_msg_two_write( ByteBuffer& buffer) {
 void client_msg_1byte_read( ByteBuffer& buffer, uint8& ui8) {
   ui8 = buffer.read_uint8();
 }
-
-
 
 };// End namespace
