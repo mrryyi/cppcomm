@@ -159,183 +159,53 @@ public:
       m_read_pos += size;
     }
   }
-  void write_int8   (const int8& data)    {
-    if (m_write_pos + sizeof(int8) > m_capacity)
+
+  template<typename T>
+  void write_singular_data(const T& data) {
+    if (m_write_pos + sizeof(T) > m_capacity)
       throw std::runtime_error("Buffer overflow");
     else {
       m_buffer[m_write_pos] = data;
-      m_write_pos += sizeof(int8);
+      m_write_pos += sizeof(T);
     }
   }
-  void write_int16  (const int16& data)   {
-    if (m_write_pos + sizeof(int16) > m_capacity)
-      throw std::runtime_error("Buffer overflow");
-    else {
-      m_buffer[m_write_pos] = data;
-      m_write_pos += sizeof(int16);
-    }
-  }
-  void write_int32  (const int32& data)   {
-    if (m_write_pos + sizeof(int32) > m_capacity)
-      throw std::runtime_error("Buffer overflow");
-    else {
-      m_buffer[m_write_pos] = data;
-      m_write_pos += sizeof(int32);
-    }
-  }
-  void write_int64  (const int64& data)   {
-    if (m_write_pos + sizeof(int64) > m_capacity)
-      throw std::runtime_error("Buffer overflow");
-    else {
-      m_buffer[m_write_pos] = data;
-      m_write_pos += sizeof(int64);
-    }
-  }
-  void write_uint8  (const uint8& data)   { 
-    if (m_write_pos + sizeof(uint8) > m_capacity)
-      throw std::runtime_error("Buffer overflow");
-    else {
-      m_buffer[m_write_pos] = data;
-      m_write_pos += sizeof(uint8);
-    }
-  }
-  void write_uint16 (const uint16& data)  {
-    if (m_write_pos + sizeof(uint16) > m_capacity)
-      throw std::runtime_error("Buffer overflow");
-    else {
-      m_buffer[m_write_pos] = data;
-      m_write_pos += sizeof(uint16);
-    }
-  }
-  void write_uint32 (const uint32& data)  {
-    if (m_write_pos + sizeof(uint32) > m_capacity)
-      throw std::runtime_error("Buffer overflow");
-    else {
-      m_buffer[m_write_pos] = data;
-      m_write_pos += sizeof(uint32);
-    }
-  }
-  void write_uint64 (const uint64& data)  {
-    if (m_write_pos + sizeof(uint64) > m_capacity)
-      throw std::runtime_error("Buffer overflow");
-    else {
-      m_buffer[m_write_pos] = data;
-      m_write_pos += sizeof(uint64);
-    }
-  }
-  void write_float32(const float32& data) {
-    if (m_write_pos + sizeof(float32) > m_capacity)
-      throw std::runtime_error("Buffer overflow");
-    else {
-      m_buffer[m_write_pos] = data;
-      m_write_pos += sizeof(float32);
-    }
-  }
-  void write_float64(const float64& data) {
-    if (m_write_pos + sizeof(float64) > m_capacity)
-      throw std::runtime_error("Buffer overflow");
-    else {
-      m_buffer[m_write_pos] = data;
-      m_write_pos += sizeof(float64);
-    }
-  }
-  
+
+  void write_int8    (const int8& data)   { write_singular_data<int8>(data); }
+  void write_int16   (const int16& data)  { write_singular_data<int16>(data); }
+  void write_int32   (const int32& data)  { write_singular_data<int32>(data); }
+  void write_int64   (const int64& data)  { write_singular_data<int64>(data); }
+  void write_uint8   (const uint8& data)  { write_singular_data<uint8>(data); }
+  void write_uint16  (const uint16& data) { write_singular_data<uint16>(data); }
+  void write_uint32  (const uint32& data) { write_singular_data<uint32>(data); }
+  void write_uint64  (const uint64& data) { write_singular_data<uint64>(data); }
+  void write_float32 (const float32& data)  { write_singular_data<float32>(data); }
+  void write_float64 (const float64& data) { write_singular_data<float64>(data); }
   void write_string (const std::string& data) {
     write_uint32(data.size()); // Define string size for reading
     write_any_data(data.c_str(), data.size());
   }
 
-  int8 read_int8()    {
-    if (m_read_pos + sizeof(int8) > m_capacity)
+  template<typename T>
+  T read_singular_data() {
+    if (m_read_pos + sizeof(T) > m_capacity)
       throw std::runtime_error("Buffer overflow");
     else {
-      int8 data = m_buffer[m_read_pos];
-      m_read_pos += sizeof(int8);
-      return data;
-    }
-  }
-  int16   read_int16()   { 
-    if (m_read_pos + sizeof(int16) > m_capacity)
-      throw std::runtime_error("Buffer overflow");
-    else {
-      int16 data = m_buffer[m_read_pos];
-      m_read_pos += sizeof(int16);
-      return data;
-    }
-  }
-  int32   read_int32()   {
-    if (m_read_pos + sizeof(int32) > m_capacity)
-      throw std::runtime_error("Buffer overflow");
-    else {
-      int32 data = m_buffer[m_read_pos];
-      m_read_pos += sizeof(int32);
-      return data;
-    }
-  }
-  int64   read_int64()   {
-    if (m_read_pos + sizeof(int64) > m_capacity)
-      throw std::runtime_error("Buffer overflow");
-    else {
-      int64 data = m_buffer[m_read_pos];
-      m_read_pos += sizeof(int64);
-      return data;
-    }
-  }
-  uint8   read_uint8()   { 
-    if (m_read_pos + sizeof(uint8) > m_capacity)
-      throw std::runtime_error("Buffer overflow");
-    else {
-      int8 data = m_buffer[m_read_pos];
-      m_read_pos += sizeof(uint8);
-      return data;
-    }
-  }
-  uint16  read_uint16()  {
-    if (m_read_pos + sizeof(uint16) > m_capacity)
-      throw std::runtime_error("Buffer overflow");
-    else {
-      uint16 data = m_buffer[m_read_pos];
-      m_read_pos += sizeof(uint16);
-      return data;
-    }
-  }
-  uint32  read_uint32()  {
-    if (m_read_pos + sizeof(uint32) > m_capacity)
-      throw std::runtime_error("Buffer overflow");
-    else {
-      uint32 data = m_buffer[m_read_pos];
-      m_read_pos += sizeof(uint32);
-      return data;
-    }
-  }
-  uint64  read_uint64()  {
-    if (m_read_pos + sizeof(uint64) > m_capacity)
-      throw std::runtime_error("Buffer overflow");
-    else {
-      uint64 data = m_buffer[m_read_pos];
-      m_read_pos += sizeof(uint64);
-      return data;
-    }
-  }
-  float32 read_float32() {
-    if (m_read_pos + sizeof(float32) > m_capacity)
-      throw std::runtime_error("Buffer overflow");
-    else {
-      float32 data = m_buffer[m_read_pos];
-      m_read_pos += sizeof(float32);
-      return data;
-    }
-  }
-  float64 read_float64() {
-    if (m_read_pos + sizeof(float64) > m_capacity)
-      throw std::runtime_error("Buffer overflow");
-    else {
-      float64 data = m_buffer[m_read_pos];
-      m_read_pos += sizeof(float64);
+      T data = m_buffer[m_read_pos];
+      m_read_pos += sizeof(T);
       return data;
     }
   }
 
+  int8    read_int8()    { return read_singular_data<int8>(); }
+  int16   read_int16()   { return read_singular_data<int16>(); }
+  int32   read_int32()   { return read_singular_data<int32>(); }
+  int64   read_int64()   { return read_singular_data<int64>(); }
+  uint8   read_uint8()   { return read_singular_data<uint8>(); }
+  uint16  read_uint16()  { return read_singular_data<uint16>(); }
+  uint32  read_uint32()  { return read_singular_data<uint32>(); }
+  uint64  read_uint64()  { return read_singular_data<uint64>(); }
+  float32 read_float32() { return read_singular_data<float32>(); }
+  float64 read_float64() { return read_singular_data<float64>(); }
   void read_string(std::string& data) {
     uint32 size = read_uint32(); // Read string size that was written in this.write_string()
     data.resize(size);
