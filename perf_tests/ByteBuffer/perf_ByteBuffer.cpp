@@ -37,6 +37,7 @@ void test_RawPointers_fill_1024_sized_buffer_with_uint8() {
   }
 }
 
+
 // Should contain iterations and time in microseconds
 struct PerformanceTestData {
   uint64 iterations;
@@ -116,6 +117,8 @@ int main (int args, const char* argv[]) {
     std::cout << "test_RawPointers_fill_1024_sized_buffer_with_uint8" << '\n';
     print_AvgPerformanceTestData(test_function_time_avg(iterations_for_avg, iterations_for_func, test_RawPointers_fill_1024_sized_buffer_with_uint8));
   }
+
+  
 
   return 0;
 }
