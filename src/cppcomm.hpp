@@ -84,6 +84,7 @@ public:
                                          m_capacity(buffer.m_capacity),
                                          m_write_pos(buffer.m_write_pos),
                                          m_read_pos(buffer.m_read_pos) {}
+                                         
   ByteBuffer(ByteBuffer&& buffer) : m_buffer(std::move(buffer.m_buffer)),
                                     m_capacity(buffer.m_capacity),
                                     m_write_pos(buffer.m_write_pos),
@@ -141,6 +142,7 @@ public:
       m_buffer[i] = 0;
     }
   }
+
   // Writes data to buffer and increments the writing position
   void write_any_data(const void* data, const size_t& size) {
     if (m_write_pos + size > m_capacity)
@@ -148,15 +150,6 @@ public:
     else {
       memcpy(&m_buffer[m_write_pos], data, size);
       m_write_pos += size;
-    }
-  }
-  // Reads data from buffer and increments the reading position
-  void read_any_data(void* data, const size_t& size) {
-    if (m_read_pos + size > m_capacity)
-      throw std::runtime_error("Buffer overflow");
-    else {
-      memcpy(data, &m_buffer[m_read_pos], size);
-      m_read_pos += size;
     }
   }
 
@@ -170,19 +163,29 @@ public:
     }
   }
 
-  void write_int8    (const int8& data)   { write_singular_data<int8>(data); }
-  void write_int16   (const int16& data)  { write_singular_data<int16>(data); }
-  void write_int32   (const int32& data)  { write_singular_data<int32>(data); }
-  void write_int64   (const int64& data)  { write_singular_data<int64>(data); }
-  void write_uint8   (const uint8& data)  { write_singular_data<uint8>(data); }
-  void write_uint16  (const uint16& data) { write_singular_data<uint16>(data); }
-  void write_uint32  (const uint32& data) { write_singular_data<uint32>(data); }
-  void write_uint64  (const uint64& data) { write_singular_data<uint64>(data); }
-  void write_float32 (const float32& data)  { write_singular_data<float32>(data); }
+  void write_int8    (const int8& data)    { write_singular_data<int8>(data); }
+  void write_int16   (const int16& data)   { write_singular_data<int16>(data); }
+  void write_int32   (const int32& data)   { write_singular_data<int32>(data); }
+  void write_int64   (const int64& data)   { write_singular_data<int64>(data); }
+  void write_uint8   (const uint8& data)   { write_singular_data<uint8>(data); }
+  void write_uint16  (const uint16& data)  { write_singular_data<uint16>(data); }
+  void write_uint32  (const uint32& data)  { write_singular_data<uint32>(data); }
+  void write_uint64  (const uint64& data)  { write_singular_data<uint64>(data); }
+  void write_float32 (const float32& data) { write_singular_data<float32>(data); }
   void write_float64 (const float64& data) { write_singular_data<float64>(data); }
-  void write_string (const std::string& data) {
+  void write_string  (const std::string& data) {
     write_uint32(data.size()); // Define string size for reading
     write_any_data(data.c_str(), data.size());
+  }
+
+  // Reads data from buffer and increments the reading position
+  void read_any_data(void* data, const size_t& size) {
+    if (m_read_pos + size > m_capacity)
+      throw std::runtime_error("Buffer overflow");
+    else {
+      memcpy(data, &m_buffer[m_read_pos], size);
+      m_read_pos += size;
+    }
   }
 
   template<typename T>
