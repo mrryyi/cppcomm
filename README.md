@@ -51,6 +51,22 @@ Requirements
 - Compileflags: `-static -static-libgcc -static-libstdc++ -std=c++20`
 - LDflags: `-lwsock32 -Wall -Wextra`
 
+Versioning
+-----------
+
+a.b.c.d
+
+- a = Huge new version with breaking or game-changing changes.
+- b = Major improvements to existing code (new functionality)
+- c = Minor improvements (implementation optimizations, etc)
+- d = Miscellaneous (Added tests, etc.)
+
+Versions are added to legacy folder at every a or b version.
+
+If tests were added at main.1.2.0.0, new version would be 1.2.0.1
+However, legacy folders at 1.2.0.0 would not have those tests, and there would be no 1.2.0.1 legacy folder.
+Tests added at 1.2.>0.>0 would get to legacy when 1.3.0.0 is released.
+
 Background
 ------------
 
