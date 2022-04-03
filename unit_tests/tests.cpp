@@ -1,4 +1,7 @@
 #include "../src/cppcomm.hpp"
+#include <limits>
+#include <string>
+
 struct TEST_DATA {
     bool8 success;
     std::string function_that_tests;
@@ -10,6 +13,8 @@ struct TEST_DATA {
 TEST_DATA read_write_ByteBuffer_mixed_types();
 TEST_DATA read_write_ByteBuffer_strings();
 TEST_DATA read_write_ByteBuffer_any_data();
+TEST_DATA Communicator_can_initialize_socket_with_size(const char * ip, const uint16 port, const int32& size);
+
 void print_test(TEST_DATA test_data);
 
 int main (int args, const char* argv[]) {
@@ -20,14 +25,47 @@ int main (int args, const char* argv[]) {
     // The point of writing to a buffer is so that it can be read and interpreted
     // So how about we just do expected behaviour first, and then we go into ways edge cases and ways to mess up?
 
+    const char * local_ip = "127.0.0.1";
+
+    uint16 port = 42069;
+    const uint32 max_int32 = 2147483647;
+    const uint32 oneGB = 1073741824;
+    const uint32 halfGB = 536870912;
+    const uint32 quarterGB = 268435456;
+    const uint32 oneMB = 1048576;
+
     printf("Starting tests...\n");
     print_test(read_write_ByteBuffer_any_data());
     print_test(read_write_ByteBuffer_strings());
     print_test(read_write_ByteBuffer_mixed_types());
+    print_test(Communicator_can_initialize_socket_with_size(local_ip, port++, max_int32));
+    print_test(Communicator_can_initialize_socket_with_size(local_ip, port++, oneGB));
+    print_test(Communicator_can_initialize_socket_with_size(local_ip, port++, halfGB));
+    print_test(Communicator_can_initialize_socket_with_size(local_ip, port++, quarterGB));
+    print_test(Communicator_can_initialize_socket_with_size(local_ip, port++, oneMB));
+
     printf("Finished tests.\n");
 
     return 0;
 }
+
+TEST_DATA Communicator_can_initialize_socket_with_size(const char * ip, const uint16 port, const int32& size) {
+    TEST_DATA test_data;
+    test_data.success = true;
+    test_data.function_that_tests = __func__;
+    test_data.what_was_tested = "init_nonblocking_udp";
+    test_data.what_should_happen = "should be able to initialize a socket with size " + std::to_string(size) + " bytes";
+    test_data.failure_report = "";
+
+    cppcomm::Communicator communicator;
+    auto ret = communicator.init_nonblocking_udp(ip, port, size);
+    if (ret != cppcomm::SUCCESS_INIT) {
+        test_data.success = false;
+        test_data.failure_report = "Initialized socket with " + std::to_string(size) +  " bytes, which is too big.";
+    }
+    
+    return test_data;
+} 
 
 TEST_DATA read_write_ByteBuffer_mixed_types() {
     TEST_DATA test_data;

@@ -54,7 +54,18 @@ constexpr static int32_retval SUCCESS_SENDING_MESSAGE   = 200;
 constexpr static int32_retval SUCCESS_RECEIVING_MESSAGE = 201;
 constexpr static int32_retval SUCCESS_INIT              = 202;
 
-constexpr static int32 SOCKET_BUFFER_SIZE = 1024;
+// https://stackoverflow.com/a/1098940
+// Don't use this size. 
+constexpr static uint16 MAX_UDP_PACKET_SIZE = 65507;
+
+// https://stackoverflow.com/a/35697810
+// Paraphrased from Beejor (2016-08-05 13:28):
+// The question of packet size is not about "will my car get stuck in traffic"
+// But more like "will my car fit under the bridge".
+// Routers can legally put zero effort into handling big packets.
+// Smaller packets are guaranteed to be handled as best they can by routers.
+constexpr static uint16 MAX_SAFE_UDP_PACKET_SIZE = 508;
+
 
 const static void print_address(const SOCKADDR_IN& address){
   //, const std::ostream& os = std::cout) { // implement this at a later point
@@ -261,11 +272,14 @@ public:
   // Returns FAILURE_ALREADY_INITIALIZED if Communication already has been initialized.
   // Returns FAILURE_INITIALIZING_WINSOCK if winsock initialization unsuccessful 
   // Returns FAILURE_MAKE_SOCKET if socket-making unsuccessful
+  // Returns SUCCESS_INIT if socket-making successful
   [[nodiscard]]
-  auto init_nonblocking_udp(const char * ip, const uint16& port) noexcept {
+  auto init_nonblocking_udp(const char * ip, const uint16& port, const int32 socket_buffer_size = 2147483647) noexcept {
     
     if (m_initialized)
       return FAILURE_ALREADY_INITIALIZED;
+    
+    m_socket_buffer_size = socket_buffer_size;
 
     //----------------------------------------
     // Initialize Winsock. Note: function does that only once per runtime.
@@ -311,8 +325,8 @@ public:
     // .size() is just the size of what we wrote to it, not the whole capacity of the buffer.
     // If this is higher than the socket buffer size, we will not send all data indended in the message
     // Therefore we count it as a failure,
-    // instead of only sending SOCKET_BUFFER_SIZE bytes out of the whole message we intended to send.
-    if (s_Msg.buffer.size() > SOCKET_BUFFER_SIZE)
+    // instead of only sending m_socket_buffer_size bytes out of the whole message we intended to send.
+    if (s_Msg.buffer.size() > MAX_UDP_PACKET_SIZE || s_Msg.buffer.size() > m_socket_buffer_size)
       return FAILURE_MESSAGE_TOO_LARGE_TO_SEND;
     
     if (s_Msg.buffer.size() < 1)
@@ -343,13 +357,13 @@ public:
     if (!m_initialized)
       return FAILURE_COMMUNICATOR_NOT_INITIALIZED;
 
-    // Changes capacity of buffer to be the size of the socket buffer.
-    recv_msg.buffer.resize(SOCKET_BUFFER_SIZE);
+    // Changes capacity of buffer to be the size of max UDP packet size.
+    recv_msg.buffer.resize(MAX_UDP_PACKET_SIZE);
     recv_msg.buffer.erase_and_reset();
 
     recv_msg.bytes_handled = recvfrom(m_socket, // from this socket
                                   (char *) recv_msg.buffer.buffer_write_pointer(), // give the socket this buffer to write the message into
-                                  SOCKET_BUFFER_SIZE,             // the socket can only receive these many bytes
+                                  m_socket_buffer_size,           // the socket can only receive these many bytes
                                   recv_msg.flags,                 // with these flags
                                   (SOCKADDR*)&recv_msg.address,   // from this address
                                   (int*) &recv_msg.address_size); // which is this long
@@ -360,6 +374,9 @@ public:
           : SUCCESS_RECEIVING_MESSAGE;
   }
   
+  const auto socket_buffer_size() const noexcept {
+    return m_socket_buffer_size;
+  }
 
 private:
   // Local management
@@ -369,6 +386,7 @@ private:
   SOCKET        m_socket;
   SOCKADDR_IN   m_local_address;
   uint16        m_local_port;
+  uint32        m_socket_buffer_size;
 
   bool8 make_nonblocking_udp_socket(SOCKET* out_socket) { 
     constexpr static int address_family = AF_INET;
@@ -378,15 +396,15 @@ private:
     SOCKET sock;
     sock = socket(address_family, type, protocol);
 
-    constexpr static int iOptLen = sizeof(SOCKET_BUFFER_SIZE); 
+    constexpr static int iOptLen = sizeof(m_socket_buffer_size); 
 
     // If no error occurs, setsockopt returns zero
-    if (SOCKET_ERROR == setsockopt(sock, SOL_SOCKET, SO_RCVBUF, (char*) &SOCKET_BUFFER_SIZE, iOptLen)) {
+    if (SOCKET_ERROR == setsockopt(sock, SOL_SOCKET, SO_RCVBUF, (char*) &m_socket_buffer_size, iOptLen)) {
       printf("make_nonblocking_udp_socket failed to set rcvbuf size: %d\n", WSAGetLastError());
       return false;
     }
     
-    if (SOCKET_ERROR == setsockopt(sock, SOL_SOCKET, SO_SNDBUF, (char*) &SOCKET_BUFFER_SIZE, iOptLen)) {
+    if (SOCKET_ERROR == setsockopt(sock, SOL_SOCKET, SO_SNDBUF, (char*) &m_socket_buffer_size, iOptLen)) {
       printf("make_nonblocking_udp_socket failed to set sndbuf size: %d\n", WSAGetLastError());
       return false;
     }
