@@ -24,24 +24,32 @@ Examples
 ### UDP nonblocking
 
 ```
+#include "cppcomm.hpp"
+#define PORT_CLIENT 68421
+
 void main() {
-// ...
-const char * local_inet_address = "127.0.0.1";
 
-cppcomm::Communicator communicator;
-auto ret = communicator.init_nonblocking_udp(local_inet_address, PORT_CLIENT);
-if (ret != cppcomm::SUCCESS_INIT) {
-  WSACleanup();
-  return 0;
+  const char * local_inet_address = "127.0.0.1";
+
+  cppcomm::Communicator communicator;
+  auto ret = communicator.init_nonblocking_udp(local_inet_address, PORT_CLIENT);
+  if (ret != cppcomm::SUCCESS_INIT) {
+    WSACleanup();
+    return 0;
+  }
+
+  SOCKADDR_IN server_address;
+  server_address.sin_family = AF_INET;
+  server_address.sin_port = htons( PORT_SERVER );
+  server_address.sin_addr.S_un.S_addr = inet_addr(local_inet_address);
+
+  cppcomm::Message msg;
+  uint32 msg_size = cppcomm::client_msg_one_write(msg.buffer);
+  auto ret = communicator.send_msg(msg, server_address);
+  if (!ret) { /* ... */ }
+  // Continues after sending without blocking
+  // ...
 }
-
-cppcomm::Message msg;
-uint32 msg_size = cppcomm::client_msg_one_write(msg.buffer);
-auto ret = communicator.send_msg(msg, msg_size, server_address);
-
-// Continues after sending without blocking
-
-// ...
 ```
 
 Requirements
