@@ -1,7 +1,7 @@
 cppcomm: header-only c++20 windows socket communication
 =========================================
 
-Communicate with less effort in C++20
+Communicate with less effort in C++20. You can find the newest version in `src/cppcomm.hpp`
 
 Features
 -----------
