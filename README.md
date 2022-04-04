@@ -69,7 +69,7 @@ a.b.c.d
 - c = Minor improvements (implementation optimizations, etc)
 - d = Miscellaneous (Added tests, etc.)
 
-Versions are added to legacy folder at every a or b version.
+Versions are added to legacy folder at every a, b or c version.
 
 If tests were added at main.1.2.0.0, new version would be 1.2.0.1
 However, legacy folders at 1.2.0.0 would not have those tests, and there would be no 1.2.0.1 legacy folder.
