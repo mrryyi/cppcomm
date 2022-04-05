@@ -13,7 +13,8 @@ struct TEST_DATA {
 TEST_DATA read_write_ByteBuffer_mixed_types();
 TEST_DATA read_write_ByteBuffer_strings();
 TEST_DATA read_write_ByteBuffer_any_data();
-TEST_DATA Communicator_can_initialize_socket_with_size(const char * ip, const uint16 port, const int32& size);
+TEST_DATA reset_ByteBuffer();
+TEST_DATA Communicator_initialize_socket_with_size(const char * ip, const uint16 port, const int32& size);
 
 void print_test(TEST_DATA test_data);
 
@@ -38,22 +39,23 @@ int main (int args, const char* argv[]) {
     print_test(read_write_ByteBuffer_any_data());
     print_test(read_write_ByteBuffer_strings());
     print_test(read_write_ByteBuffer_mixed_types());
-    print_test(Communicator_can_initialize_socket_with_size(local_ip, port++, max_int32));
-    print_test(Communicator_can_initialize_socket_with_size(local_ip, port++, oneGB));
-    print_test(Communicator_can_initialize_socket_with_size(local_ip, port++, halfGB));
-    print_test(Communicator_can_initialize_socket_with_size(local_ip, port++, quarterGB));
-    print_test(Communicator_can_initialize_socket_with_size(local_ip, port++, oneMB));
+    print_test(reset_ByteBuffer());
+    print_test(Communicator_initialize_socket_with_size(local_ip, port++, max_int32));
+    print_test(Communicator_initialize_socket_with_size(local_ip, port++, oneGB));
+    print_test(Communicator_initialize_socket_with_size(local_ip, port++, halfGB));
+    print_test(Communicator_initialize_socket_with_size(local_ip, port++, quarterGB));
+    print_test(Communicator_initialize_socket_with_size(local_ip, port++, oneMB));
 
     printf("Finished tests.\n");
 
     return 0;
 }
 
-TEST_DATA Communicator_can_initialize_socket_with_size(const char * ip, const uint16 port, const int32& size) {
+TEST_DATA Communicator_initialize_socket_with_size(const char * ip, const uint16 port, const int32& size) {
     TEST_DATA test_data;
     test_data.success = true;
     test_data.function_that_tests = __func__;
-    test_data.what_was_tested = "init_nonblocking_udp";
+    test_data.what_was_tested = "Communicator::init_nonblocking_udp()";
     test_data.what_should_happen = "should be able to initialize a socket with size " + std::to_string(size) + " bytes";
     test_data.failure_report = "";
 
@@ -67,12 +69,44 @@ TEST_DATA Communicator_can_initialize_socket_with_size(const char * ip, const ui
     return test_data;
 } 
 
+// Should write data to the buffer, reset it, and have it be empty.
+TEST_DATA reset_ByteBuffer() {
+    TEST_DATA test_data;
+    test_data.success = true;
+    test_data.function_that_tests = __func__;
+    test_data.what_was_tested = "ByteBuffer::reset()";
+    test_data.what_should_happen = "should be able to reset ByteBuffer";
+    test_data.failure_report = "";
+
+    cppcomm::ByteBuffer buffer;
+    buffer.resize(4 * sizeof(int32));
+    buffer.write_int32(1);
+    buffer.write_int32(2);
+    buffer.write_int32(3);
+    buffer.write_int32(4);
+
+    buffer.reset();
+
+    auto zero1 = buffer.read_int32();
+    auto zero2 = buffer.read_int32();
+    auto zero3 = buffer.read_int32();
+    auto zero4 = buffer.read_int32();
+
+    // All zerox values should be zero
+    if (zero1 != 0 || zero2 != 0 || zero3 != 0 || zero4 != 0) {
+        test_data.success = false;
+        test_data.failure_report = "ByteBuffer was not reset correctly.";
+    }
+
+    return test_data;
+}
+
 TEST_DATA read_write_ByteBuffer_mixed_types() {
     TEST_DATA test_data;
     test_data.success = true;
     test_data.function_that_tests = __func__;
-    test_data.what_was_tested = "Bytebuffer should be able to read and write mixed types";
-    test_data.what_should_happen = "";
+    test_data.what_was_tested = "Bytebuffer";
+    test_data.what_should_happen = "should be able to read and write mixed types";
     test_data.failure_report = "";
 
     // Create a buffer
@@ -130,7 +164,7 @@ TEST_DATA read_write_ByteBuffer_strings() {
     test_data.success = true;
     test_data.function_that_tests = __func__;
     test_data.what_was_tested = "ByteBuffer::write_string() and ByteBuffer::read_string()";
-    test_data.what_should_happen = "The ByteBuffer should be able to write and read a string correctly";
+    test_data.what_should_happen = "should be able to write and read a string correctly";
     test_data.failure_report = "";
 
     // Create a ByteBuffer
