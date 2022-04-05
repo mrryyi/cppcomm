@@ -122,13 +122,10 @@ public:
 
   void resize(const size_t size) {
     m_buffer.resize(size);
-    m_read_pos = 0;
-    m_write_pos = 0;
     m_capacity = size;
   }
 
-  void erase_and_reset() {
-    m_buffer.erase(m_buffer.begin(), m_buffer.end());
+  void reset() {
     write_all_to_zero();
     m_write_pos = 0;
     m_read_pos = 0;
@@ -359,7 +356,7 @@ public:
 
     // Changes capacity of buffer to be the size of max UDP packet size.
     recv_msg.buffer.resize(MAX_UDP_PACKET_SIZE);
-    recv_msg.buffer.erase_and_reset();
+    recv_msg.buffer.reset();
 
     recv_msg.bytes_handled = recvfrom(m_socket, // from this socket
                                   (char *) recv_msg.buffer.buffer_write_pointer(), // give the socket this buffer to write the message into
