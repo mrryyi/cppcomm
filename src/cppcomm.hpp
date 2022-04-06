@@ -125,23 +125,20 @@ public:
     m_capacity = size;
   }
 
+  void resize_to_fit_content() {
+    this->resize(m_write_pos);
+  }
+
   void reset() {
-    write_all_to_zero();
+    this->write_all_to_zero();
     m_write_pos = 0;
     m_read_pos = 0;
   }
-
-  void reset_read_pos() { m_read_pos = 0; }
-  void reset_write_pos() { m_write_pos = 0; }
   
   const size_t capacity() const noexcept { return m_capacity; }
-  const size_t size() const noexcept { return m_buffer.size(); }
   const size_t write_pos() const noexcept { return m_write_pos; }
   const size_t read_pos() const noexcept { return m_read_pos; }
   const size_t remaining() const noexcept { return m_capacity - m_write_pos; }
-  const size_t available() const noexcept { return m_capacity - m_read_pos; }
-  const bool empty() const noexcept { return m_write_pos == m_read_pos; }
-  const bool full() const noexcept { return m_write_pos == m_capacity; }
 
   void write_all_to_zero() {
     for (size_t i = 0; i < m_capacity; i++) {
@@ -323,16 +320,16 @@ public:
     // If this is higher than the socket buffer size, we will not send all data indended in the message
     // Therefore we count it as a failure,
     // instead of only sending m_socket_buffer_size bytes out of the whole message we intended to send.
-    if (s_Msg.buffer.size() > MAX_UDP_PACKET_SIZE || s_Msg.buffer.size() > m_socket_buffer_size)
+    if (s_Msg.buffer.write_pos() > MAX_UDP_PACKET_SIZE || s_Msg.buffer.write_pos() > m_socket_buffer_size)
       return FAILURE_MESSAGE_TOO_LARGE_TO_SEND;
     
-    if (s_Msg.buffer.size() < 1)
+    if (s_Msg.buffer.write_pos() < 1)
       return FAILURE_MESSAGE_HAS_NO_DATA;
 
     s_Msg.bytes_handled = sendto(
                               m_socket, // through this socket
                 (const char*) s_Msg.buffer.buffer_read_pointer(), // give the socket this buffer for reading
-                              s_Msg.buffer.size(), // which has data for this many bytes
+                              s_Msg.buffer.write_pos(), // which has data for this many bytes
                               s_Msg.flags,        // with these flags
                   (SOCKADDR*) &address,           // to this address
                               s_Msg.address_size  // which is this long

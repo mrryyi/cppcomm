@@ -14,6 +14,8 @@ TEST_DATA read_write_ByteBuffer_mixed_types();
 TEST_DATA read_write_ByteBuffer_strings();
 TEST_DATA read_write_ByteBuffer_any_data();
 TEST_DATA reset_ByteBuffer();
+TEST_DATA resize_to_fit_content_ByteBuffer();
+TEST_DATA remaining_ByteBuffer();
 TEST_DATA Communicator_initialize_socket_with_size(const char * ip, const uint16 port, const int32& size);
 
 void print_test(TEST_DATA test_data);
@@ -40,6 +42,8 @@ int main (int args, const char* argv[]) {
     print_test(read_write_ByteBuffer_strings());
     print_test(read_write_ByteBuffer_mixed_types());
     print_test(reset_ByteBuffer());
+    print_test(resize_to_fit_content_ByteBuffer());
+    print_test(remaining_ByteBuffer());
     print_test(Communicator_initialize_socket_with_size(local_ip, port++, max_int32));
     print_test(Communicator_initialize_socket_with_size(local_ip, port++, oneGB));
     print_test(Communicator_initialize_socket_with_size(local_ip, port++, halfGB));
@@ -50,6 +54,7 @@ int main (int args, const char* argv[]) {
 
     return 0;
 }
+
 
 TEST_DATA Communicator_initialize_socket_with_size(const char * ip, const uint16 port, const int32& size) {
     TEST_DATA test_data;
@@ -67,7 +72,79 @@ TEST_DATA Communicator_initialize_socket_with_size(const char * ip, const uint16
     }
     
     return test_data;
-} 
+}
+
+TEST_DATA remaining_ByteBuffer() {
+    TEST_DATA test_data;
+    test_data.success = true;
+    test_data.function_that_tests = __func__;
+    test_data.what_was_tested = "ByteBuffer::remaining()";
+    test_data.what_should_happen = "should return the number of bytes remaining in the buffer";
+    test_data.failure_report = "";
+
+    cppcomm::ByteBuffer buffer;
+
+    // decide size
+    const uint32 size = 1024;
+
+    // Size the buffer
+    buffer.resize(size);
+
+    // Write some data
+    buffer.write_int32(1);
+    buffer.write_int32(2);
+    buffer.write_int32(3);
+    buffer.write_int32(4);
+
+    // Check the remaining size
+    if (buffer.remaining() != size - 4 * sizeof(int32)) {
+        test_data.success = false;
+        test_data.failure_report = "Remaining size is not " + std::to_string(size - 4 * sizeof(int32)) + " bytes";
+    }
+
+    return test_data;
+}
+
+TEST_DATA resize_to_fit_content_ByteBuffer() {
+    TEST_DATA test_data;
+    test_data.success = true;
+    test_data.function_that_tests = __func__;
+    test_data.what_was_tested = "ByteBuffer::reset_to_fit_content()";
+    test_data.what_should_happen = "should make size and capacity equal, and not tamper with the data";
+    test_data.failure_report = "";
+
+    cppcomm::ByteBuffer buffer;
+    // Four too many bytes. 
+    buffer.resize(5 * sizeof(int32));
+    buffer.write_int32(1);
+    buffer.write_int32(2);
+    buffer.write_int32(3);
+    buffer.write_int32(4);
+
+    buffer.resize_to_fit_content();
+
+    if (buffer.capacity() != buffer.write_pos()) {
+        test_data.success = false;
+        test_data.failure_report = "Size not equal to capacity.";
+    }
+
+    auto one = buffer.read_int32();
+    auto two = buffer.read_int32();
+    auto three = buffer.read_int32();
+    auto four = buffer.read_int32();
+
+    if (  one != 1
+       || two != 2
+       || three != 3
+       || four != 4 )
+    {
+        test_data.success = false;
+        test_data.failure_report.append("Resizing to fill altered data.");
+
+    }
+
+    return test_data;
+}
 
 // Should write data to the buffer, reset it, and have it be empty.
 TEST_DATA reset_ByteBuffer() {
@@ -126,6 +203,9 @@ TEST_DATA read_write_ByteBuffer_mixed_types() {
     
     buffer.write_string("Hello World");
 
+    // To make sure string is written correctly by having stuff after it.
+    buffer.write_float64(7.0);
+
     // Read the data back
     int8_t int8_value   = buffer.read_int8();
     int16_t int16_value = buffer.read_int16();
@@ -138,6 +218,7 @@ TEST_DATA read_write_ByteBuffer_mixed_types() {
     float float32_value = buffer.read_float32();
     double float64_value = buffer.read_float64();
     std::string string_value; buffer.read_string(string_value);
+    double float64_value2 = buffer.read_float64();
 
     // Check the values
     if (   int8_value != 1 
@@ -150,7 +231,8 @@ TEST_DATA read_write_ByteBuffer_mixed_types() {
         && uint64_value != 4
         && float32_value != 5.0f
         && float64_value != 6.0
-        && string_value != "Hello World")
+        && string_value != "Hello World"
+        && float64_value2 != 7.0)
     {
         test_data.success = false;
         test_data.failure_report = "Failed to read back the data correctly";
