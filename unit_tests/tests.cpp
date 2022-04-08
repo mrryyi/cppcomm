@@ -88,7 +88,7 @@ TEST_DATA remaining_ByteBuffer() {
     const uint32 size = 1024;
 
     // Size the buffer
-    buffer.resize(size);
+    buffer.set_capacity(size);
 
     // Write some data
     buffer.write_int32(1);
@@ -115,7 +115,7 @@ TEST_DATA resize_to_fit_content_ByteBuffer() {
 
     cppcomm::ByteBuffer buffer;
     // Four too many bytes. 
-    buffer.resize(5 * sizeof(int32));
+    buffer.set_capacity(5 * sizeof(int32));
     buffer.write_int32(1);
     buffer.write_int32(2);
     buffer.write_int32(3);
@@ -156,7 +156,7 @@ TEST_DATA reset_ByteBuffer() {
     test_data.failure_report = "";
 
     cppcomm::ByteBuffer buffer;
-    buffer.resize(4 * sizeof(int32));
+    buffer.set_capacity(4 * sizeof(int32));
     buffer.write_int32(1);
     buffer.write_int32(2);
     buffer.write_int32(3);

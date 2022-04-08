@@ -120,13 +120,13 @@ public:
   // For writing
   auto buffer_write_pointer() { return m_buffer.data(); }
 
-  void resize(const size_t size) {
+  void set_capacity(const size_t size) {
     m_buffer.resize(size);
     m_capacity = size;
   }
 
   void resize_to_fit_content() {
-    this->resize(m_write_pos);
+    this->set_capacity(m_write_pos);
   }
 
   void reset() {
@@ -352,7 +352,7 @@ public:
       return FAILURE_COMMUNICATOR_NOT_INITIALIZED;
 
     // Changes capacity of buffer to be the size of max UDP packet size.
-    recv_msg.buffer.resize(MAX_UDP_PACKET_SIZE);
+    recv_msg.buffer.set_capacity(MAX_UDP_PACKET_SIZE);
     recv_msg.buffer.reset();
 
     recv_msg.bytes_handled = recvfrom(m_socket, // from this socket
@@ -485,12 +485,12 @@ private:
   
 // Below functions are purely for demo purposes.
 void client_msg_one_write( ByteBuffer& buffer) {
-  buffer.resize(sizeof(uint8));
+  buffer.set_capacity(sizeof(uint8));
   buffer.write_uint8(1);
 };
 
 void client_msg_two_write( ByteBuffer& buffer) {
-  buffer.resize(sizeof(uint8));
+  buffer.set_capacity(sizeof(uint8));
   buffer.write_uint8(2);
 };
 
