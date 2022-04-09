@@ -94,7 +94,7 @@ cppcomm should at least help facillitate client-server topology.
 
 ### Design choices
 
-I like snake_case.
+I like snake_case. Go away if not.
 
 I like writing C++ in C-style, but I dislike not having access to STL.
 
