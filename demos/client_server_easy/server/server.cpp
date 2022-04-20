@@ -1,6 +1,10 @@
 #include "../../../src/cppcomm.hpp"
 #include "../common.hpp"
 
+void client_msg_1byte_read( cppcomm::ByteBuffer& buffer, uint8& ui8) {
+  ui8 = buffer.read_uint8();
+}
+
 int main(int argc, char* argv[]) {
 
   printf("Program Started: %s\n", argv[0]); 
@@ -22,7 +26,7 @@ int main(int argc, char* argv[]) {
     if (msg.bytes_handled != SOCKET_ERROR) {
       printf("Received message.\n");
       uint8 byte_for_reading;
-      cppcomm::client_msg_1byte_read(msg.buffer, byte_for_reading);
+      client_msg_1byte_read(msg.buffer, byte_for_reading);
 
       switch(byte_for_reading) {
         case 1:

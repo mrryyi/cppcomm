@@ -482,20 +482,5 @@ private:
     return 1;
   }
 }; // End Communicator
-  
-// Below functions are purely for demo purposes.
-void client_msg_one_write( ByteBuffer& buffer) {
-  buffer.set_capacity(sizeof(uint8));
-  buffer.write_uint8(1);
-};
-
-void client_msg_two_write( ByteBuffer& buffer) {
-  buffer.set_capacity(sizeof(uint8));
-  buffer.write_uint8(2);
-};
-
-void client_msg_1byte_read( ByteBuffer& buffer, uint8& ui8) {
-  ui8 = buffer.read_uint8();
-}
 
 };// End namespace
