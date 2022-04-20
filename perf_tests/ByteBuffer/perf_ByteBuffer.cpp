@@ -13,7 +13,7 @@ static void write_uint8(uint8** buffer_iterator, const uint8& ui8) {
 
 void test_ByteBuffer_fill_1024_sized_buffer_with_uint8_resize() {
   cppcomm::ByteBuffer buffer;
-  buffer.resize(1024);
+  buffer.set_capacity(1024);
   for (uint64 i = 0; i < buffer.capacity() / sizeof(uint8) /* lol */; ++i) {
     buffer.write_uint8(i % 256);
   }
@@ -45,7 +45,7 @@ static void write_uint32(uint8** buffer_iterator, uint32 i32) {
 
 void test_ByteBuffer_fill_4096_sized_buffer_with_uint32_resize() {
   cppcomm::ByteBuffer buffer;
-  buffer.resize(4096);
+  buffer.set_capacity(4096);
   for (size_t i = 0; i < buffer.capacity() / sizeof(uint32); ++i) {
     buffer.write_uint32(i % 256);
   }
